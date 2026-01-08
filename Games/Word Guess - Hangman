@@ -1,0 +1,125 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args){
+        // Variables
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+        ArrayList<Character> wordState = new ArrayList<>();
+        int wrongGuesses = 0;
+        String filePath = "C:\\Users\\Lenovo\\Desktop\\fruits.txt";
+        String word = "";
+        int currentLine = 0;
+        int targetLine = random.nextInt(1,31);
+        char guessedLetter;
+
+        try(BufferedReader reader = new BufferedReader(new FileReader(filePath))){
+            while((word = reader.readLine()) != null){
+                currentLine++;
+                if (currentLine == targetLine){
+                    break;
+                }
+            }
+        }
+        catch (IOException e){
+            System.out.println("Failed to read file.");
+        }
+        catch (Exception e){
+            System.out.println("Something went wrong.");
+        }
+
+        // Fiiling guess with ___
+        for (int i=0; i<word.length(); i++){
+            wordState.add('_');
+        }
+
+        // Welcoming message
+        System.out.println("""
+                ************************
+                Welcome to Java Hangman.
+                ************************
+                """);
+
+        // While loop till wrongGuesses != 6
+        while (wrongGuesses != 6){
+            System.out.print("Word: ");
+            for (char c: wordState){
+                System.out.print(c + " ");
+            }
+            System.out.print("\nGuess a letter: ");
+            char guess = scanner.next().toLowerCase().charAt(0);
+
+            // Printing Hangman
+            System.out.println("Hangman State:");
+            System.out.println(getHangmanArt(wrongGuesses));
+
+            if(word.indexOf(guess) >= 0){
+                System.out.println("Correct guess.\n");
+                // Revealing letters if guessed correct
+                for (int i = 0; i < word.length(); i++){
+                    if (word.charAt(i) == guess){
+                        wordState.set(i, guess);
+                    }
+                }
+            }
+
+            else{
+                System.out.println("Wrong guess.\n");
+                wrongGuesses ++;
+            }
+
+            // Checking if the player has won or not
+            if (!wordState.contains('_')){
+                System.out.println("You Win.");
+                System.out.println("The word was " + word);
+                break;
+            }
+        }
+
+        // If plyer has lost
+        if (wrongGuesses >= 6){
+            System.out.println(getHangmanArt(wrongGuesses));
+            System.out.println("Game Over.");
+            System.out.println("The word was " + word);
+        }
+        scanner.close();
+    }
+
+    // Method to get ASKII art according to number of wrong choices
+    static String getHangmanArt(int wrongGuesses){
+        return switch(wrongGuesses){
+            case 0 -> "Not hanged!!";
+            case 1 -> """
+                        O
+                    """;
+            case 2 -> """
+                        O
+                       /
+                    """;
+            case 3 -> """
+                        O
+                       /|
+                    """;
+            case 4 -> """
+                        O
+                       /|\\
+                    """;
+            case 5 -> """
+                        O
+                       /|\\
+                       /
+                    """;
+            case 6 -> """
+                        O
+                       /|\\
+                       / \\
+                    """;
+            default -> "";
+        };
+    }
+}
